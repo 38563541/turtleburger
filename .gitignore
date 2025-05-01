@@ -1,0 +1,44 @@
+# Ignore catkin build results
+build/
+devel/
+install/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# ROS logs
+log/
+logs/
+
+# Visual Studio Code settings
+.vscode/
+
+# JetBrains IDE settings
+.idea/
+
+# ROS bag files (if generated)
+*.bag
+
+# Temporary files
+*.swp
+*.swo
+*~
+
+# Dataset or video cache (optional)
+*.avi
+*.mp4
+*.mov
+*.mkv
+*.png
+*.jpg
+
+# Ignore compiled files
+*.so
+*.out
+*.o
+
+# If using Colcon (ROS 2)
+build/
+install/
+log/
