@@ -110,6 +110,13 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
+catkin_install_python(PROGRAMS
+  scripts/camera_node.py
+  scripts/lane_detection_node.py
+  scripts/offset_serial_node.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 ###########
 ## Build ##
 ###########
