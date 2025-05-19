@@ -6,5 +6,5 @@
   <node pkg="lane_pkg" type="image_process_node.py" name="image_process_node" output="screen" />
 
   <!-- 啟動 lane_visualizer -->
-  <node pkg="lane_pkg" type="offset_serial_node.py" name="offset_serial_node" output="screen" />
+  <node pkg="lane_pkg" type="send_serial_node.py" name="send_serial_node" output="screen" />
 </launch>
