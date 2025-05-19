@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 import rospy
-from std_msgs.msg import Float32
+from std_msgs.msg import String
 import serial
 
 class OffsetToSerial:
     def __init__(self, port='/dev/ttyACM0', baudrate=115200):
         self.ser = serial.Serial(port, baudrate, timeout=1)
-        rospy.Subscriber('/lane/offset', Float32, self.offset_callback)
+        rospy.Subscriber('/message/ArduinoROS', String, self.message_callback)
 
-    def offset_callback(self, msg):
-        offset = msg.data
-        send_str = f"{offset:.2f}\n"
+    def message_callback(self, msg):
+        send_str = msg.data + "\n"  # 加上換行符號方便 Arduino 解析
         self.ser.write(send_str.encode('utf-8'))
         rospy.loginfo(f"Sent to Arduino: {send_str.strip()}")
 

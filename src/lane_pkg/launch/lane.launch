@@ -3,7 +3,7 @@
   <node pkg="lane_pkg" type="camera_node.py" name="camera_node" output="screen" />
 
   <!-- 啟動 lane_detector -->
-  <node pkg="lane_pkg" type="lane_detection_node.py" name="lane_detection_node" output="screen" />
+  <node pkg="lane_pkg" type="image_process_node.py" name="image_process_node" output="screen" />
 
   <!-- 啟動 lane_visualizer -->
   <node pkg="lane_pkg" type="offset_serial_node.py" name="offset_serial_node" output="screen" />
