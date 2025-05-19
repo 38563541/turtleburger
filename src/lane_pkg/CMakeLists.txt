@@ -113,8 +113,8 @@ catkin_package(
 catkin_install_python(PROGRAMS
   scripts/camera_node.py
   scripts/image_process_node.py
-  scripts/offset_serial_node.py
-  scripts/send_serial_node.py.py
+  
+  scripts/send_serial_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
