@@ -2,20 +2,14 @@
 import rospy
 import cv2
 import numpy as np
-import serial
-import time
+import threading
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
 from cv_bridge import CvBridge
 
-# === Serial (可選用於硬體發送訊息) ===
-# arduino = serial.Serial(port='/dev/ttyUSB1', baudrate=115200, timeout=.1)
-# time.sleep(2)
-
 bridge = CvBridge()
-image_center = None
-frame_height = None
-frame_width = None
+latest_frame = None
+lock = threading.Lock()
 
 pub_message = None
 pub_image = None
@@ -197,10 +191,7 @@ def draw_all(frame, triangle_info, triangle_roi, lane_info):
         cv2.line(frame, (int(lane_info['lane_center']), 0), (int(lane_info['lane_center']), frame.shape[0]), (0, 255, 0), 2)
         cv2.line(frame, (frame.shape[1] // 2, 0), (frame.shape[1] // 2, frame.shape[0]), (0, 255, 255), 2)
         cv2.putText(frame, f'Offset: {offset:.2f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-
-        message = f"N{int(offset)}"
-        pub_message.publish(message)
-        # arduino.write(f"{message}\n".encode())
+        pub_message.publish(f"N{int(offset)}")
     else:
         cv2.putText(frame, 'No lanes detected', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
@@ -209,22 +200,41 @@ def draw_all(frame, triangle_info, triangle_roi, lane_info):
     return frame
 
 def image_callback(msg):
-    global pub_image
-    frame = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-    triangles, tri_roi, state = detect_triangles(frame)
-    lanes = detect_lanes(frame, state)
-    output_frame = draw_all(frame, triangles, tri_roi, lanes)
-    image_msg = bridge.cv2_to_imgmsg(output_frame, encoding='bgr8')
-    pub_image.publish(image_msg)
+    global latest_frame
+    try:
+        frame = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+        with lock:
+            latest_frame = frame
+    except Exception as e:
+        rospy.logerr(f"CV bridge error: {e}")
 
 def main():
     global pub_message, pub_image
-    rospy.init_node('lane_triangle_node', anonymous=True)
+    rospy.init_node('lane_triangle_node_opt', anonymous=True)
     pub_message = rospy.Publisher('/message/ArduinoROS', String, queue_size=10)
-    pub_image = rospy.Publisher('/processed_image', Image, queue_size=1)
+    pub_image = rospy.Publisher('/processed_image', Image, queue_size=10)
     rospy.Subscriber('/camera/image_raw', Image, image_callback)
-    rospy.loginfo("Lane & Triangle Detection Node Started")
-    rospy.spin()
+    rospy.loginfo("Optimized Lane & Triangle Detection Node Started")
+
+    rate = rospy.Rate(30)
+    while not rospy.is_shutdown():
+        frame = None
+        with lock:
+            if latest_frame is not None:
+                frame = latest_frame.copy()
+
+        if frame is not None:
+            triangles, tri_roi, state = detect_triangles(frame)
+            lanes = detect_lanes(frame, state)
+            output_frame = draw_all(frame, triangles, tri_roi, lanes)
+            image_msg = bridge.cv2_to_imgmsg(output_frame, encoding='bgr8')
+            pub_image.publish(image_msg)
+            cv2.imshow("Processed Frame", output_frame)
+            cv2.waitKey(1)
+
+        rate.sleep()
+
+    cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     main()

@@ -4,7 +4,7 @@ from std_msgs.msg import String
 import serial
 
 class OffsetToSerial:
-    def __init__(self, port='/dev/ttyACM0', baudrate=115200):
+    def __init__(self, port='/dev/ttyUSB1', baudrate=115200):
         self.ser = serial.Serial(port, baudrate, timeout=1)
         rospy.Subscriber('/message/ArduinoROS', String, self.message_callback)
 
