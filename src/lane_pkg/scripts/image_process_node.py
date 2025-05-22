@@ -186,18 +186,44 @@ def draw_all(frame, triangle_info, triangle_roi, lane_info):
         cv2.drawContours(frame, [tri['contour']], 0, (0, 255, 255), 3)
         cv2.putText(frame, tri['dir'], (tri['cx'] - 30, tri['cy']), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
 
+    y_start = int(frame.shape[0] * height_start_ratio)
+    y_end = frame.shape[0]
+
+    if 'left_fit' in lane_info:
+        left_fit = lane_info['left_fit']
+        x1 = int(left_fit[0] * y_start + left_fit[1])
+        x2 = int(left_fit[0] * y_end + left_fit[1])
+        cv2.line(frame, (x1, y_start), (x2, y_end), (255, 0, 0), 2)  # 藍色左線
+
+    if 'right_fit' in lane_info:
+        right_fit = lane_info['right_fit']
+        x1 = int(right_fit[0] * y_start + right_fit[1])
+        x2 = int(right_fit[0] * y_end + right_fit[1])
+        cv2.line(frame, (x1, y_start), (x2, y_end), (0, 0, 255), 2)  # 紅色右線
+
     if 'lane_center' in lane_info:
         offset = lane_info['lane_center'] - (frame.shape[1] // 2)
         cv2.line(frame, (int(lane_info['lane_center']), 0), (int(lane_info['lane_center']), frame.shape[0]), (0, 255, 0), 2)
         cv2.line(frame, (frame.shape[1] // 2, 0), (frame.shape[1] // 2, frame.shape[0]), (0, 255, 255), 2)
         cv2.putText(frame, f'Offset: {offset:.2f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        pub_message.publish(f"N{int(offset)}")
+        
+        direction_char = 'X'
+        if triangle_info:
+            first_triangle_dir = triangle_info[0].get('dir') 
+            if first_triangle_dir == "Left":
+                direction_char = 'L'
+            elif first_triangle_dir == "Right":
+                direction_char = 'R'
+
+        message_to_send = f"N{int(offset)}T{direction_char}"
+        pub_message.publish(message_to_send)
     else:
         cv2.putText(frame, 'No lanes detected', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
     directions = [tri['dir'] for tri in triangle_info] if triangle_info else ['Not Detected']
     cv2.putText(frame, f'Triangle(s): {", ".join(directions)}', (10, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 100, 0), 2)
     return frame
+
 
 def image_callback(msg):
     global latest_frame
