@@ -1,0 +1,14 @@
+<launch>
+  <!-- 啟動 move_base -->
+  <node pkg="move_base" type="move_base" name="move_base" output="screen">
+    <!-- 使用 move_base 參數檔 -->
+    <rosparam file="$(find your_nav_pkg)/param/move_base_params.yaml" command="load" />
+
+    <!-- 使用 costmap 設定 -->
+    <rosparam file="$(find your_nav_pkg)/param/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find your_nav_pkg)/param/global_costmap_params.yaml" command="load" />
+
+    <!-- 選擇路徑規劃器與參數 -->
+    <rosparam file="$(find your_nav_pkg)/param/base_local_planner_params.yaml" command="load" />
+  </node>
+</launch>

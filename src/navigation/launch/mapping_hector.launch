@@ -61,8 +61,8 @@
       <param name="pub_debug_output" value="true"/>
     -->
   </node>
-  <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server" output="screen">
-  <param name="target_frame_name" value="base_footprint"/>
-  </node>
-  
+  <node pkg="navigation" type="keyboardcontroller.py" name="keyboard_controller" output="screen" />
+   <!-- 啟動 RViz -->
+  <node pkg="rviz" type="rviz" name="rviz" output="screen"
+        args="-d $(navigation/rviz/mapping.rviz" />
 </launch>
