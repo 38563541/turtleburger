@@ -53,7 +53,7 @@ class LocalPlanHeadingNode:
         if final_dist <= self.goal_tolerance:
             if not self.goal_reached:
                 rospy.loginfo("\u2705 Reached final goal. Sending stop.")
-                self.pub_message.publish("mode:s\n")
+                self.pub_message.publish("S0TX")
                 self.goal_reached = True
             return
         else:
@@ -69,7 +69,8 @@ class LocalPlanHeadingNode:
         heading_error = yaw_target - yaw_current
         heading_error = math.atan2(math.sin(heading_error), math.cos(heading_error))
 
-        command_str = f"mode:1,offset:{heading_error:.3f}\\n"
+        offset = int(math.degrees(heading_error))
+        command_str = f"N{offset}TX"
         self.pub_message.publish(command_str)
 
 if __name__ == '__main__':
