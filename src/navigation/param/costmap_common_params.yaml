@@ -1,0 +1,13 @@
+obstacle_range: 2.5
+raytrace_range: 3.0
+
+robot_radius: 0.12  # 或改用 footprint
+
+inflation_radius: 0.3
+
+observation_sources: scan
+scan:
+  data_type: LaserScan
+  topic: /scan   # ← 就是你實際的雷射 topic，不能寫錯
+  marking: true
+  clearing: true

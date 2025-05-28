@@ -1,14 +1,21 @@
 <launch>
+  <node pkg="tf" type="static_transform_publisher" name="baselink_to_basefootprint" args="0 0 0 0 0 0 base_link base_footprint 100" />
+
   <!-- 啟動 move_base -->
-  <node pkg="move_base" type="move_base" name="move_base" output="screen">
-    <!-- 使用 move_base 參數檔 -->
-    <rosparam file="$(find your_nav_pkg)/param/move_base_params.yaml" command="load" />
+  <node pkg="move_base" type="move_base" name="move_base" output="screen" >
+    <!-- 明確指定命名空間，這樣會進到 /move_base/global_costmap/... -->
+    
+    <!-- 使用 move_base 參數 -->
+    <rosparam command="load" file="$(find navigation)/param/move_base_params.yaml" />
+    <rosparam file="$(find navigation)/param/costmap_common_params.yaml" command="load" />
+    <!-- local_costmap -->
+    <rosparam ns="local_costmap" command="load" file="$(find navigation)/param/local_costmap_params.yaml" />
 
-    <!-- 使用 costmap 設定 -->
-    <rosparam file="$(find your_nav_pkg)/param/local_costmap_params.yaml" command="load" />
-    <rosparam file="$(find your_nav_pkg)/param/global_costmap_params.yaml" command="load" />
+    <!-- global_costmap -->
+    <rosparam ns="global_costmap" command="load" file="$(find navigation)/param/global_costmap_params.yaml" />
 
-    <!-- 選擇路徑規劃器與參數 -->
-    <rosparam file="$(find your_nav_pkg)/param/base_local_planner_params.yaml" command="load" />
+    <!-- base_local_planner -->
+    <rosparam command="load" file="$(find navigation)/param/base_local_planner_params.yaml" />
   </node>
 </launch>
+

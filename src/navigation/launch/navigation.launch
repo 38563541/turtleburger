@@ -1,5 +1,7 @@
 <launch>
 
+
+
   <!-- Launch Hector SLAM for real-time mapping -->
   <include file="$(find navigation)/launch/hector.launch" />
 
@@ -14,7 +16,7 @@
     <!-- Launch Communication node to Arduino-->
   <node pkg="lane_pkg" type="send_serial_node.py" name="send_serial_node" output="screen" />
 
-  <!-- Optional: Visualize in RViz -->
+  <!-- Optional: Visualize in RViz 
   <node pkg="rviz" type="rviz" name="rviz" args="-d $(find navigation)/rviz/navigation.rviz" required="false" />
-
+-->
 </launch>
