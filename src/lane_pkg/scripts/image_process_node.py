@@ -25,9 +25,9 @@ min_line_length = 30
 max_line_gap = 40
 
 triangle_region_top = 0
-triangle_region_bottom = 0.8
-triangle_region_left = 0.1
-triangle_region_right = 0.9
+triangle_region_bottom = 0.7
+triangle_region_left = 0.2
+triangle_region_right = 0.8
 
 def region_of_interest(img, vertices):
     mask = np.zeros_like(img)

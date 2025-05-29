@@ -6,6 +6,8 @@ from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Path
 from std_msgs.msg import String
 
+LOOKAHEAD_DISTANCE = 0.1  # 可以參數化
+
 class LocalPlanHeadingNode:
     def __init__(self):
         rospy.init_node("local_plan_heading_node")
@@ -18,10 +20,24 @@ class LocalPlanHeadingNode:
         self.goal_reached = False
 
         rospy.Subscriber("/slam_out_pose", PoseStamped, self.pose_cb)
-        rospy.Subscriber("move_base/TrajectoryPlannerROS/local_plan", Path, self.local_plan_cb)
+        rospy.Subscriber("/move_base/NavfnROS/plan", Path, self.local_plan_cb)
 
         rospy.loginfo("[local_plan_heading_node] Running, publishing to: %s", self.topic_name)
         rospy.spin()
+    
+    def get_lookahead_target(self, current_pose):
+        cx = current_pose.position.x
+        cy = current_pose.position.y
+
+        for pose_stamped in self.local_plan:
+            tx = pose_stamped.pose.position.x
+            ty = pose_stamped.pose.position.y
+            dist = math.hypot(tx - cx, ty - cy)
+            if dist >= LOOKAHEAD_DISTANCE:
+                return pose_stamped.pose
+
+        # 若沒有找到遠一點的點，就用最後一個點
+        return self.local_plan[-1].pose
 
     def local_plan_cb(self, msg):
         if not msg.poses:
@@ -36,10 +52,14 @@ class LocalPlanHeadingNode:
 
         current = msg.pose
 
-        if len(self.local_plan) > 1:
-            target_pose = self.local_plan[1].pose
-        else:
-            target_pose = self.local_plan[0].pose
+        # 舊的方式
+        # if len(self.local_plan) > 1:
+        #     target_pose = self.local_plan[1].pose
+        # else:
+        #     target_pose = self.local_plan[0].pose
+
+        # ➤ 新的方式
+        target_pose = self.get_lookahead_target(current)
 
         dx = target_pose.position.x - current.position.x
         dy = target_pose.position.y - current.position.y
@@ -70,7 +90,7 @@ class LocalPlanHeadingNode:
         heading_error = yaw_target - yaw_current
         heading_error = math.atan2(math.sin(heading_error), math.cos(heading_error))
 
-        offset = int(math.degrees(heading_error))
+        offset = int(math.degrees(heading_error)+30)
         rospy.logdebug(f"Heading error (deg): {offset}")
         command_str = f"N{offset}TX"
         self.pub_message.publish(command_str)

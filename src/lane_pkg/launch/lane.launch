@@ -1,4 +1,6 @@
 <launch>
+  <!-- 啟動 RPLIDAR 驅動 
+  <include file="$(find navigation)/launch/hector.launch" />-->
   <!-- 啟動 image_subscriber -->
   <node pkg="lane_pkg" type="camera_node.py" name="camera_node" output="screen" />
 
