@@ -11,7 +11,7 @@
   <arg name="tf_map_scanmatch_transform_frame_name" default="scanmatcher_frame"/>
 
   <!-- 啟動 RPLIDAR 驅動 -->
-  <include file="$(find rplidar_ros)/launch/rplidar.launch" />
+  <include file="$(find rplidar_ros)/launch/rplidar_a1.launch" />
   <!--tf setup-->
   <node pkg="tf" type="static_transform_publisher" name="base_to_laser_tf" args="0 0 0 0 0 0 base_footprint laser 100" />
   <node pkg="tf" type="static_transform_publisher" name="odom_to_base_tf"

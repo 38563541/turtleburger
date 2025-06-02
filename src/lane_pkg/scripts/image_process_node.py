@@ -17,7 +17,7 @@ pub_image = None
 # === 參數設定 ===
 top_width_ratio = 1
 bottom_width_ratio = 1.0
-height_start_ratio = 0.6
+height_start_ratio = 0.65
 canny_threshold1 = 50
 canny_threshold2 = 150
 hough_threshold = 30
@@ -152,9 +152,9 @@ def detect_lanes(frame, state):
         x1, y1, x2, y2 = line[0]
         slope = (y2 - y1) / (x2 - x1) if (x2 - x1) != 0 else np.inf
         x_avg = (x1 + x2) / 2
-        if slope < -0.15 and x_avg < center:
+        if slope < -0.45 and x_avg < center:
             left_points += [(x1, y1), (x2, y2)]
-        elif slope > 0.15 and x_avg > center:
+        elif slope > 0.45 and x_avg > center:
             right_points += [(x1, y1), (x2, y2)]
 
     results = {}

@@ -90,7 +90,7 @@ class LocalPlanHeadingNode:
         heading_error = yaw_target - yaw_current
         heading_error = math.atan2(math.sin(heading_error), math.cos(heading_error))
 
-        offset = int(math.degrees(heading_error)+30)
+        offset = int(math.degrees(heading_error))
         rospy.logdebug(f"Heading error (deg): {offset}")
         command_str = f"N{offset}TX"
         self.pub_message.publish(command_str)
