@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="mission_controller" type="task_controller.py" name="task_controller" output="screen"/>
+</launch>
